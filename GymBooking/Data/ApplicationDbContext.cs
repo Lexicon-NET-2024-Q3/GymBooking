@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using GymBooking.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymBooking.Data
@@ -9,5 +10,7 @@ namespace GymBooking.Data
             : base(options)
         {
         }
+
+        public DbSet<GymClass> GymClasses { get; set; }
     }
 }
