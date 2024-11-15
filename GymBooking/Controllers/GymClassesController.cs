@@ -29,7 +29,25 @@ namespace GymBooking.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.GymClasses.ToListAsync());
+            var userId = _userManager.GetUserId(User);
+            var gymClasses = await _context.GymClasses
+                .Include(g => g.AttendingMembers)
+                .ThenInclude(a => a.User)
+                .ToListAsync();
+
+            var model = gymClasses.Select(g => new IndexGymClassViewModel
+            {
+                Id = g.Id,
+                 Name = g.Name,
+                  StartTime = g.StartTime,
+                  Duration = g.Duration,
+                  Description = g.Description,
+                  Attending = g.AttendingMembers.Any(a=>a.ApplicationUserId == userId)
+
+            }).ToList();
+
+
+            return View(model);
         }
 
         // GET: GymClasses/Details/5
