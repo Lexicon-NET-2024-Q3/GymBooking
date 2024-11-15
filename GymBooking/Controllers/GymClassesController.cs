@@ -33,6 +33,7 @@ namespace GymBooking.Controllers
             var gymClasses = await _context.GymClasses
                 .Include(g => g.AttendingMembers)
                 .ThenInclude(a => a.User)
+                .Where(g=>g.StartTime > DateTime.Now)
                 .ToListAsync();
 
             var model = gymClasses.Select(g => new IndexGymClassViewModel
@@ -48,6 +49,24 @@ namespace GymBooking.Controllers
 
 
             return View(model);
+        }
+
+        public async Task<IActionResult> History()
+        {
+            var gymClasses = await _context.GymClasses
+                .Where(g => g.StartTime < DateTime.Now)
+                .ToListAsync();
+
+            var model = gymClasses.Select(g => new IndexGymClassViewModel
+            {
+                Id = g.Id,
+                Name = g.Name,
+                StartTime = g.StartTime,
+                Duration = g.Duration,
+                Description = g.Description
+            }).ToList();
+
+            return View(model); 
         }
 
         // GET: GymClasses/Details/5
