@@ -69,6 +69,29 @@ namespace GymBooking.Controllers
             return View(model); 
         }
 
+        public async Task<IActionResult> MyBookings()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var bookedClasses = await _context.Users
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.AttendedClasses)
+                .Select(ac => ac.GymClass)
+                .Where(g => g.StartTime > DateTime.Now)
+                .ToListAsync();
+
+            var model = bookedClasses.Select(b => new IndexGymClassViewModel
+            {
+                Id = b.Id,
+                Name = b.Name,
+                StartTime = b.StartTime,
+                Duration = b.Duration,
+                Description = b.Description
+            }).ToList();
+
+            return View(model);
+        }
+
         // GET: GymClasses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
